@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "marca": "Nike",
+        "nombre": "Nike Mercurial Superfly 8",
+        "descripcion": "Velocidad máxima con la tecnología más avanzada para velocistas profesionales",
+        "precioOriginal": 310,
+        "precio": 220,
+        "imagen": "./img/nike3.jpg"
+    },
+    {
+        "id": 2,
+        "marca": "Nike",
+        "nombre": "Nike Phantom GX Elite",
+        "descripcion": "Control y precisión incomparables en cada toque del balón",
+        "precioOriginal": 250,
+        "precio": 177,
+        "imagen": "./img/nike promo1.png"
+    },
+    {
+        "id": 3,
+        "marca": "Nike",
+        "nombre": "Nike Vapor 14 Elite",
+        "descripcion": "Ligereza extrema para velocistas que buscan máximo rendimiento",
+        "precioOriginal": 150,
+        "precio": 106,
+        "imagen": "./img/nike promo2.png"
+    },
+    {
+        "id": 4,
+        "marca": "Nike",
+        "nombre": "Nike Phantom Venom Elite",
+        "descripcion": "Potencia y control en cada toque con tecnología Venom",
+        "precioOriginal": 400,
+        "precio": 284,
+        "imagen": "./img/nike2.jpg"
+    },
+    {
+        "id": 5,
+        "marca": "Adidas",
+        "nombre": "Adidas Copa Sense.1 FG",
+        "descripcion": "Comodidad y control supremo para jugadores exigentes",
+        "precioOriginal": 400,
+        "precio": 276,
+        "imagen": "./img/adidas1.jpg"
+    },
+    {
+        "id": 6,
+        "marca": "Adidas",
+        "nombre": "Adidas Predator Freak",
+        "descripcion": "Spin y versatilidad incomparables en cada jugada",
+        "precioOriginal": 230,
+        "precio": 163,
+        "imagen": "./img/adidas2.jpg"
+    },
+    {
+        "id": 7,
+        "marca": "Puma",
+        "nombre": "Puma Future Z 1.4",
+        "descripcion": "Visión periférica mejorada para jugadores creativos",
+        "precioOriginal": 200,
+        "precio": 140,
+        "imagen": "./img/pumas.jpg"
+    },
+    {
+        "id": 8,
+        "marca": "New Balance",
+        "nombre": "New Balance Tekela Pro",
+        "descripcion": "Estabilidad excepcional en campo para máximo rendimiento",
+        "precioOriginal": 120,
+        "precio": 84,
+        "imagen": "./img/newbalance.jpg"
+    }
+]

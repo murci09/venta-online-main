@@ -1,205 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Venta de Botines</title>
+    <meta name="description" content="Tienda online de botines deportivos: Nike, Adidas y Puma. Ofertas especiales en calzado de fútbol profesional. Compra botines de calidad a los mejores precios.">
+    <meta name="keywords" content="botines, botas de fútbol, Nike, Adidas, Puma, tienda online, deportes">
+    <meta name="author" content="Santiago Saleme">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Tienda de Botines - Las Mejores Marcas">
+    <meta property="og:description" content="Compra botines deportivos de las mejores marcas con ofertas especiales">
+    <title>Tienda de Botines | Nike, Adidas, Puma | Ofertas Especiales</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 <body>
     
-    <header class="header">
+    <header class="header" role="banner">
         <div class="menu container">
-            <a href="" class="logo">logo</a>
-            <input type="checkbox" id="menu"/>
-            <label for="menu"> <img src="./img/menu.png" class="menu-icono"></label>
+            <a href="#" class="logo" title="Logo">Murci</a>
+            <input type="checkbox" id="menu" aria-label="Menú de navegación"/>
+            <label for="menu"> <img src="./img/menu.png" class="menu-icono" alt="Menú"></label>
 
-            <nav class="navbar">
-
+            <nav class="navbar" role="navigation" aria-label="Navegación principal">
                 <ul>
-                    <li><a href="#">Inicio</a></li>
-                    <li><a href="#">Servicios</a></li>
-                    <li><a href="#">Productos</a></li>
-                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#" title="Ir al inicio">Inicio</a></li>
+                    <li><a href="#" title="Ver nuestros servicios">Servicios</a></li>
+                    <li><a href="#productos" title="Ver productos">Productos</a></li>
+                    <li><a href="#" title="Contactar">Contacto</a></li>
                 </ul>
-
             </nav>
         
             <div>
                 <ul class="submenu">
                     <li>
-                        <img src="./img/car.svg" id="img-carrito" alt="">
-                        <div id="carrito">
+                        <img src="./img/car.svg" id="img-carrito" alt="Carrito de compras" title="Ver carrito">
+                        <div id="carrito" role="region" aria-label="Carrito de compras">
                             <table id="lista-carrito">
                                 <thead> 
                                     <tr>
-                                        <th>Imagen</th>
-                                        <th>Nombre</th>
-                                        <th>Precio</th>
-                                        <th></th>
+                                        <th scope="col">Imagen</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Precio</th>
+                                        <th scope="col">Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
-
                             </table>
-                            <a href="#" id="vaciar-carrito" class="btn-3">Vaciar</a>
-
+                            <div style="margin-top: 20px; display: flex; gap: 10px;">
+                                <button id="vaciar-carrito" class="btn-3" aria-label="Limpiar carrito" style="flex: 1;">Vaciar Carrito</button>
+                                <button id="finalizar-compra-carrito" class="btn-1" aria-label="Ir a finalizar compra" style="flex: 1; margin: 0; padding: 12px;">Finalizar Compra</button>
+                            </div>
                         </div>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="header-content container">
-             <div class="header-info">
-                            <div class="header-txt">
-                                <h1>Botines Nike</h1>
-                                <div class="price">
-                                    <p class="price-1">$90.000</p>
-                                    <p class="price-2">$89.000</p>
-
-                                </div>
-                                <a href="#" class="btn-1">Informacion</a>
-
-                            </div>
-
-                            <div class="header-img">
-                                <img src="./img/nike-phantom gx elite.png" alt="">
-    
-                            </div>
-                        </div>
-
-    </header>
-    <hr>
-    <main>
-   
-        <section class="promos container" id="lista-1">
-            <h2>Promociones</h2>
-            <div class="categories">
-                <div class="categorie">
-
-                    <div class="categorie-1">
-                        <h3>promo 1</h3>
-                        <div class="prices">
-                            <p class="price-1">70.000</p>
-                            <p class="price-2">50.000</p>
-
-                        </div>
-                        <a href="#" class="agregar-carrito btn-3" data-id="1">agregar al carrito</a>
-                        
-                    </div>
-                    <div class="categorie-img">
-                        <img src="./img/nike-mercurial superfly 8.png" alt="">
-                        
-                    </div>
-                    
-
-                </div>
-
-                <div class="categorie">
-
-                    <div class="categorie-1">
-                        <h3>promo 2</h3>
-                        <div class="prices">
-                            <p class="price-1">70.000</p>
-                            <p class="price-2">50.000</p>
-
-                        </div>
-                        
-                        <a href="#" class="agregar-carrito btn-3" data-id="2">agregar al carrito</a>
-                    </div>
-                    <div class="categorie-img">
-                        <img src="./img/nike promo1.png" alt="">
-
-                    </div>
-
-                </div>
-
-                <div class="categorie">
-
-                    <div class="categorie-1">
-                        <h3>promo 3</h3>
-                        <div class="prices">
-                            <p class="price-1">70.000</p>
-                            <p class="price-2">50.000</p>
-
-                        </div>
-                        
-                        <a href="#" class="agregar-carrito btn-3" data-id="3">agregar al carrito</a>
-                    </div>
-                    <div class="categorie-img">
-                        <img src="./img/nike promo2.png" alt="">
-
-                    </div>
-
-                </div>
-
-                <div class="categorie">
-
-                    <div class="categorie-1">
-                        <h3>promo 4</h3>
-                        <div class="prices">
-                            <p class="price-1">70.000</p>
-                            <p class="price-2">50.000</p>
-
-                        </div>
-                        <a href="#" class="agregar-carrito btn-3" data-id="4">agregar al carrito</a>
-                        
-                    </div>
-                    <div class="categorie-img">
-                        <img src="./img/nike promo3.png" alt="">
-
-                    </div>
-
-                </div>
-                
-
-            </div>
-   
-
-        </section>
-        <hr>
-       
         
+        <div class="header-content container">
+            <div class="header-info">
+                <article class="header-txt">
+                    <h1>Botines Nike Premium</h1>
+                    <p>Tecnología de punta para el rendimiento máximo en cada partido</p>
+                    <div class="price">
+                        <p class="price-1">$320.000</p>
+                        <p class="price-2">$280.000</p>
+                    </div>
+                    <a href="#productos" class="btn-1" title="Comprar botines">Ver Productos</a>
+                </article>
+
+                <figure class="header-img">
+                    <img src="./img/nike-gx.png" alt="Botines Nike Phantom GX Elite - Calzado profesional de fútbol" title="Nike Phantom GX Elite">
+                </figure>
+            </div>
+        </div>
+    </header>
+
+    <hr>
+
+    <main role="main">
+        <section class="promos container" id="productos">
+            <h2>Nuestros Productos</h2>
+            <p style="color: #747b8f; margin-bottom: 30px; text-align: center; font-size: 16px;">Descubre nuestra amplia variedad de botines de calidad premium</p>
+
+            <!-- Filtro por marcas -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <button class="btn-filtro" data-filter="todos" style="background-color: #3b82f6;">Todos</button>
+                <button class="btn-filtro" data-filter="Nike">Nike</button>
+                <button class="btn-filtro" data-filter="Adidas">Adidas</button>
+                <button class="btn-filtro" data-filter="Puma">Puma</button>
+                <button class="btn-filtro" data-filter="New Balance">New Balance</button>
+            </div>
+
+            <!-- Grid de productos -->
+            <div class="grid-productos" id="grid-productos">
+                <!-- Los productos se cargarán aquí con JavaScript -->
+            </div>
+        </section>
+
+        <hr>
+
+    
+
+        <hr>
     </main>
 
-    
-    <footer class="footer container">
-        <div class="link">
-            <h3>Lorem</h3>
-
+    <footer class="footer container" role="contentinfo">
+        <section class="link">
+            <h3>Información</h3>
             <ul>
-                <li><a href="">lorem</a></li>
-                <li><a href="">lorem</a></li>
-                <li><a href="">lorem</a></li>
-                <li><a href="">lorem</a></li>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Servicio</a></li>
+                <li><a href="#">Nosotros</a></li>
+                <li><a href="#">Contacto</a></li>
             </ul>
+        </section>
 
-        </div>
-        <div class="link">
-            <h3>Lorem </h3>
-
+        <section class="link">
+            <h3>Categorías</h3>
             <ul>
-                <li><a href="">lorem</a></li>
-                <li><a href="">lorem</a></li>
-                <li><a href="">lorem</a></li>
-                <li><a href="">lorem</a></li>
+                <li><a href="#" title="Botines Nike">Nike</a></li>
+                <li><a href="#" title="Botines Adidas">Adidas</a></li>
+                <li><a href="#" title="Botines Puma">Puma</a></li>
+                <li><a href="#" title="Botines New Balance">New Balance</a></li>
             </ul>
-
-        </div>
+        </section>
         
-      
-        <div class="link">
-            <h3>Lorem</h3>
-
-           <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eveniet voluptate quia dolorem dicta debitis cumque tempore accusamus doloremque </p>
-
-        </div>
-        
+        <section class="link">
+            <h3>Contacto</h3>
+            <p>Para más información sobre nuestros productos o servicios, no dudes en contactarnos. Estamos disponibles para resolver tus dudas sobre botines deportivos y estilos de juego.</p>
+        </section>
     </footer>
-    
 
-    
-    <script src="/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="./app.js"></script>
 </body>
 </html> 
