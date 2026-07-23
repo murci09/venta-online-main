@@ -1,0 +1,26 @@
+{
+  "name": "venta-online-main",
+  "version": "1.0.0",
+  "description": "Página de venta de botines Es un simulador interactivo para el curso de Coderhouse, con productos cargados desde `data.json` y un carrito que guarda la info al recargar.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/murci09/venta-online-main.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/murci09/venta-online-main/issues"
+  },
+  "homepage": "https://github.com/murci09/venta-online-main#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mercadopago": "^3.2.0"
+  }
+}

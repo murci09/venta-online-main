@@ -5,7 +5,7 @@
         "nombre": "Nike Mercurial Superfly 8",
         "descripcion": "Velocidad máxima con la tecnología más avanzada para velocistas profesionales",
         "precioOriginal": 310,
-        "precio": 220,
+        "precio": 2,
         "imagen": "./img/nike3.jpg"
     },
     {
@@ -14,7 +14,7 @@
         "nombre": "Nike Phantom GX Elite",
         "descripcion": "Control y precisión incomparables en cada toque del balón",
         "precioOriginal": 250,
-        "precio": 177,
+        "precio": 1,
         "imagen": "./img/nike promo1.png"
     },
     {
@@ -23,7 +23,7 @@
         "nombre": "Nike Vapor 14 Elite",
         "descripcion": "Ligereza extrema para velocistas que buscan máximo rendimiento",
         "precioOriginal": 150,
-        "precio": 106,
+        "precio": 3,
         "imagen": "./img/nike promo2.png"
     },
     {
