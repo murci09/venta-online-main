@@ -1,8 +1,18 @@
+// ==========================================
+// 1. INICIALIZACIÓN Y VARIABLES GLOBALES
+// ==========================================
+
+// Inicializo Mercado Pago (Reemplazá 'TEST-TU_PUBLIC_KEY_DE_PRUEBA_AQUI' con tu clave real)
+const mp = new MercadoPago("APP_USR-951af724-669d-48f8-89d2-5425845ed35f", {
+    locale: 'es-AR'
+});
+
 const apiURL = './data.json';
 let botines = [];
 let carrito = [];
 let filtroActual = 'todos';
 
+// Elementos del DOM
 const gridProductos = document.querySelector('#grid-productos');
 const tablaCarrito = document.querySelector('#lista-carrito tbody');
 const botonVaciar = document.querySelector('#vaciar-carrito');
@@ -11,7 +21,10 @@ const botonesFiltro = document.querySelectorAll('.btn-filtro');
 const botonFinalizarDesdeCarrito = document.querySelector('#finalizar-compra-carrito');
 const divCarrito = document.querySelector('#carrito');
 
-// Inicializo la app cuando el DOM ya está cargado
+// ==========================================
+// 2. EVENT LISTENERS & INICIO
+// ==========================================
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarBotines();
     cargarCarritoDelLocalStorage();
@@ -25,7 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
     botonFinalizarDesdeCarrito.addEventListener('click', irAFinalizarCompra);
 });
 
-// Función para cargar los botines desde data.json usando async/await
+// ==========================================
+// 3. CARGA Y RENDERIZADO DE PRODUCTOS
+// ==========================================
+
 async function cargarBotines() {
     try {
         const respuesta = await fetch(apiURL);
@@ -35,6 +51,7 @@ async function cargarBotines() {
 
         botines = await respuesta.json();
         renderizarProductos(botines);
+
         const primerBoton = Array.from(botonesFiltro).find(btn => btn.dataset.filter === 'todos');
         if (primerBoton) primerBoton.classList.add('activo');
     } catch (error) {
@@ -47,7 +64,6 @@ async function cargarBotines() {
     }
 }
 
-// Función para pintar los botines en el HTML
 function renderizarProductos(productosAMostrar) {
     gridProductos.innerHTML = '';
 
@@ -85,7 +101,6 @@ function renderizarProductos(productosAMostrar) {
     });
 }
 
-// Filtro de productos por marca usando .filter()
 function filtrarProductos(e) {
     filtroActual = e.target.dataset.filter;
 
@@ -99,7 +114,10 @@ function filtrarProductos(e) {
     renderizarProductos(productosFiltrados);
 }
 
-// Cargo el carrito desde localStorage al iniciar
+// ==========================================
+// 4. LÓGICA DEL CARRITO & LOCALSTORAGE
+// ==========================================
+
 function cargarCarritoDelLocalStorage() {
     const carritoGuardado = localStorage.getItem('carritoVentaOnline');
     if (carritoGuardado) {
@@ -108,12 +126,10 @@ function cargarCarritoDelLocalStorage() {
     }
 }
 
-// Guardo el carrito en localStorage cada vez que cambia
 function guardarCarritoEnLocalStorage() {
     localStorage.setItem('carritoVentaOnline', JSON.stringify(carrito));
 }
 
-// Agrego un producto al carrito usando .find()
 function agregarAlCarrito(e) {
     e.preventDefault();
     const idProducto = parseInt(e.target.dataset.id, 10);
@@ -141,7 +157,6 @@ function agregarAlCarrito(e) {
     }
 }
 
-// Muestro el contenido del carrito en la tabla del HTML
 function mostrarCarrito() {
     tablaCarrito.innerHTML = '';
 
@@ -172,7 +187,6 @@ function mostrarCarrito() {
     mostrarTotal();
 }
 
-// Quito un producto del carrito usando .filter()
 function eliminarDelCarrito(e) {
     const idProducto = parseInt(e.target.dataset.id, 10);
     carrito = carrito.filter(p => p.id !== idProducto);
@@ -180,7 +194,6 @@ function eliminarDelCarrito(e) {
     mostrarCarrito();
 }
 
-// Vacío el carrito y confirmo con SweetAlert2
 function vaciarCarrito(e) {
     e.preventDefault();
 
@@ -195,9 +208,7 @@ function vaciarCarrito(e) {
         cancelButtonText: 'Cancelar'
     }).then(result => {
         if (result.isConfirmed) {
-            carrito = [];
-            localStorage.removeItem('carritoVentaOnline');
-            mostrarCarrito();
+            vaciarCarritoCompleto();
             Swal.fire({
                 icon: 'success',
                 title: 'Carrito vaciado',
@@ -209,7 +220,6 @@ function vaciarCarrito(e) {
     });
 }
 
-// Calculo y muestro el total del carrito
 function mostrarTotal() {
     const total = carrito.reduce((sum, producto) => sum + producto.precio * producto.cantidad, 0);
     const totalRow = document.createElement('tr');
@@ -221,12 +231,20 @@ function mostrarTotal() {
     tablaCarrito.appendChild(totalRow);
 }
 
-// Muestro y oculto el panel del carrito
 function toggleCarrito() {
     divCarrito.style.display = divCarrito.style.display === 'block' ? 'none' : 'block';
 }
 
-// Inicio el proceso de finalizar compra con SweetAlert2
+function vaciarCarritoCompleto() {
+    carrito = [];
+    localStorage.removeItem('carritoVentaOnline');
+    mostrarCarrito();
+}
+
+// ==========================================
+// 5. PROCESO DE PAGO E INTEGRACIÓN CON MERCADO PAGO
+// ==========================================
+
 function irAFinalizarCompra(e) {
     e.preventDefault();
 
@@ -251,7 +269,7 @@ function irAFinalizarCompra(e) {
             </div>
         `,
         icon: 'question',
-        confirmButtonText: 'Continuar',
+        confirmButtonText: 'Continuar a Mercado Pago',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#0EA5E9',
         cancelButtonColor: '#ef4444',
@@ -264,11 +282,7 @@ function irAFinalizarCompra(e) {
                 Swal.showValidationMessage('Por favor ingresa tu nombre');
                 return false;
             }
-            if (!email) {
-                Swal.showValidationMessage('Por favor ingresa tu email');
-                return false;
-            }
-            if (!email.includes('@')) {
+            if (!email || !email.includes('@')) {
                 Swal.showValidationMessage('Por favor ingresa un email válido');
                 return false;
             }
@@ -282,42 +296,51 @@ function irAFinalizarCompra(e) {
     });
 }
 
-// Simulo el pago y vacío el carrito al final
-function procesarCompraConDatos(nombre, email) {
-    const totalCompra = carrito.reduce((sum, producto) => sum + producto.precio * producto.cantidad, 0);
-
+async function procesarCompraConDatos(nombre, email) {
     Swal.fire({
-        title: 'Procesando tu pedido...',
-        html: '<div class="spinner"></div>',
+        title: 'Conectando con Mercado Pago...',
+        text: 'Estamos preparando tu orden de pago',
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
         }
     });
 
-    setTimeout(() => {
-        Swal.fire({
-            icon: 'success',
-            title: '¡Pedido recibido!',
-            html: `
-                <p style="margin: 15px 0; font-size: 16px;"><strong>${nombre}</strong>, revisa tu casilla de correo</p>
-                <div style="background: rgba(14, 165, 233, 0.1); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left;">
-                    <p style="margin: 8px 0;"><strong>Email:</strong> ${email}</p>
-                    <p style="margin: 8px 0;"><strong>Total:</strong> $${totalCompra.toLocaleString('es-CO')}</p>
-                </div>
-                <p style="font-size: 14px; color: #94a3b8;">Te enviaremos un resumen a tu correo</p>
-            `,
-            confirmButtonText: 'Cerrar',
-            confirmButtonColor: '#0EA5E9'
-        }).then(() => {
-            vaciarCarritoCompleto();
+    try {
+        const respuesta = await fetch('http://localhost:3000/create-preference', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                items: carrito,
+                payer: { nombre, email }
+            })
         });
-    }, 2000);
-}
 
-// Vacío el carrito y borro el localStorage al finalizar
-function vaciarCarritoCompleto() {
-    carrito = [];
-    localStorage.removeItem('carritoVentaOnline');
-    mostrarCarrito();
+        const data = await respuesta.json();
+        Swal.close();
+
+        if (data.id) {
+            mp.checkout({
+                preference: {
+                    id: data.id
+                },
+                autoOpen: true
+            });
+
+            vaciarCarritoCompleto();
+        } else {
+            throw new Error('No se pudo generar la orden de pago');
+        }
+
+    } catch (error) {
+        console.error("Error al procesar el pago:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Ocurrió un error',
+            text: 'No se pudo conectar con Mercado Pago. Verifica que el servidor (server.js) esté corriendo.',
+            confirmButtonColor: '#0EA5E9'
+        });
+    }
 }
