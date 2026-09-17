@@ -1,57 +1,51 @@
-# Proyecto Final JS - Tienda de Botines
+# Tienda de Botines — Demo de portafolio
 
-Página de venta de botines. Es un simulador interactivo para el curso de Coderhouse, con
-productos cargados desde `data.json`, un carrito que guarda la info al recargar y checkout
-con Mercado Pago.
+Tienda de botines deportivos hecha con HTML, CSS y JavaScript puro (sin frameworks).
+Proyecto final del curso de JavaScript de Coderhouse, ampliado como pieza de portafolio.
+
+> **Es una demo.** La tienda es ficticia y el checkout está simulado: recorre todos los
+> pasos de una compra real (resumen, datos, procesamiento, confirmación con número de
+> orden) pero no cobra nada, no pide datos de tarjeta y no envía información a ningún
+> servidor.
 
 ## Funcionalidades
 
-- Carrito de compras funcional
-- Agregar y eliminar productos del carrito
-- Uso de `fetch` para traer los productos desde un JSON
-- Guardado en `localStorage` para no perder el carrito al recargar
-- Confirmación de compra con SweetAlert2
-- Notificaciones al agregar al carrito con Toastify
-- Pago con Mercado Pago (Checkout Pro)
-- Diseño responsive para compu y móvil
+- Catálogo cargado con `fetch` desde `data.json`
+- Filtro de productos por marca
+- Carrito de compras: agregar, eliminar y vaciar
+- Carrito persistente con `localStorage` (no se pierde al recargar)
+- Checkout simulado en 4 pasos con validación de formulario
+- Número de orden y fecha de entrega estimada generados al confirmar
+- Notificaciones con Toastify y diálogos con SweetAlert2
+- Diseño responsive para escritorio y móvil
 
 ## Estructura
 
-- `index.html`, `css/`, `img/`, `app.js`, `data.json` → el sitio estático (frontend)
-- `api/create-preference.js` → función serverless que crea la preferencia de pago
-- `server.js` → servidor Express **solo para desarrollo local** (reusa la misma función)
-- `vercel.json` → le dice a Vercel que esto es un sitio estático, no una app Node
+    index.html      estructura de la página
+    css/style.css   estilos y diseño responsive
+    app.js          catálogo, filtros, carrito y checkout simulado
+    data.json       los 8 productos del catálogo
+    img/            imágenes de los productos
+    vercel.json     configuración de deploy (sitio estático)
 
-## Probarlo en local
+## Cómo probarlo en local
 
-Solo el frontend (sin pagos):
+El catálogo se carga con `fetch`, así que abrir el archivo directamente con doble clic
+no funciona (el navegador bloquea `fetch` sobre `file://`). Hay que servirlo por HTTP:
 
-    Abrir index.html con la extensión Live Server.
+- **Live Server**: abrir el proyecto en VS Code, clic derecho en `index.html` →
+  *Open with Live Server*
+- **o con Node**: `npx serve .` y abrir la URL que imprime
 
-Con pagos, en dos terminales:
+## Deploy
 
-    # Terminal 1 - backend
-    $env:MP_ACCESS_TOKEN="tu_access_token_de_mercado_pago"
-    node server.js
-
-    # Terminal 2
-    Abrir index.html con Live Server.
-
-## Deploy en Vercel
-
-1. En el proyecto de Vercel: **Settings → Environment Variables**, agregar
-   `MP_ACCESS_TOKEN` con el Access Token de Mercado Pago. Sin esta variable el
-   checkout responde 500.
-2. Dejar el Framework Preset en **Other** y el Root Directory en la raíz del repo.
-3. No hace falta Build Command ni Output Directory: `vercel.json` ya los define.
-
-El Access Token es **secreto** y nunca va en el código. La Public Key
-(`MP_PUBLIC_KEY` en `app.js`) sí es pública y puede ir en el frontend.
+Es un sitio estático: no necesita build, ni backend, ni variables de entorno.
+En Vercel se importa el repo, se deja el Framework Preset en **Other** y listo —
+`vercel.json` se encarga del resto.
 
 ## Tecnologías
 
-- HTML
-- CSS
-- JavaScript
-- Node + Express (dev) / Funciones serverless de Vercel (producción)
-- SDK de Mercado Pago
+- HTML5 y CSS3 (Flexbox, Grid, custom properties, media queries)
+- JavaScript ES6+ (async/await, módulos de datos JSON, `localStorage`)
+- [SweetAlert2](https://sweetalert2.github.io/) para los diálogos del checkout
+- [Toastify](https://apvarun.github.io/toastify-js/) para las notificaciones

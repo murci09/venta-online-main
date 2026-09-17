@@ -2,23 +2,9 @@
 // 1. INICIALIZACIÓN Y VARIABLES GLOBALES
 // ==========================================
 
-// Public Key de Mercado Pago (es publica, puede ir en el front).
-const MP_PUBLIC_KEY = "APP_USR-951af724-669d-48f8-89d2-5425845ed35f";
-
-// El SDK se carga desde un CDN externo: si falla o lo bloquea un adblocker,
-// NO debe romper toda la pagina. Por eso la inicializacion va protegida.
-let mp = null;
-if (typeof MercadoPago !== 'undefined') {
-    mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'es-AR' });
-} else {
-    console.warn('No se pudo cargar el SDK de Mercado Pago. Se usara redireccion directa al checkout.');
-}
-
-// En local el backend corre en el puerto 3000; en Vercel es una funcion en /api.
-const enLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
-const endpointPago = enLocal
-    ? 'http://localhost:3000/api/create-preference'
-    : '/api/create-preference';
+// DEMO: esta tienda es una simulacion para portafolio. El checkout recorre
+// todo el flujo de una compra real (resumen, datos, pago, confirmacion) pero
+// no cobra nada ni envia datos a ningun servidor.
 
 const apiURL = './data.json';
 let botines = [];
@@ -71,7 +57,7 @@ async function cargarBotines() {
         Swal.fire({
             icon: 'error',
             title: 'Error al cargar productos',
-            text: 'No se pudieron obtener los datos. Usa Live Server y vuelve a intentar.',
+            text: 'No se pudieron obtener los datos del catálogo. Recargá la página para volver a intentar.',
             confirmButtonColor: '#0EA5E9'
         });
     }
@@ -234,11 +220,10 @@ function vaciarCarrito(e) {
 }
 
 function mostrarTotal() {
-    const total = carrito.reduce((sum, producto) => sum + producto.precio * producto.cantidad, 0);
     const totalRow = document.createElement('tr');
     totalRow.innerHTML = `
         <td colspan="2"><strong>Total:</strong></td>
-        <td><strong>$${total.toLocaleString('es-CO')}</strong></td>
+        <td><strong>${formatearPrecio(calcularTotal())}</strong></td>
         <td></td>
     `;
     tablaCarrito.appendChild(totalRow);
@@ -255,9 +240,33 @@ function vaciarCarritoCompleto() {
 }
 
 // ==========================================
-// 5. PROCESO DE PAGO E INTEGRACIÓN CON MERCADO PAGO
+// 5. CHECKOUT SIMULADO (DEMO)
 // ==========================================
 
+// Pausa artificial para que la simulacion se sienta como una pasarela real.
+const esperar = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+function calcularTotal() {
+    return carrito.reduce((suma, producto) => suma + producto.precio * producto.cantidad, 0);
+}
+
+function contarUnidades() {
+    return carrito.reduce((suma, producto) => suma + producto.cantidad, 0);
+}
+
+// Numero de orden con formato realista: DEMO-20260917-4821
+function generarNumeroOrden() {
+    const f = new Date();
+    const fecha = `${f.getFullYear()}${String(f.getMonth() + 1).padStart(2, '0')}${String(f.getDate()).padStart(2, '0')}`;
+    const azar = String(Math.floor(Math.random() * 9000) + 1000);
+    return `DEMO-${fecha}-${azar}`;
+}
+
+function formatearPrecio(valor) {
+    return `${valor.toLocaleString('es-CO')}`;
+}
+
+// Paso 0: valida el carrito y arranca el flujo
 function irAFinalizarCompra(e) {
     e.preventDefault();
 
@@ -271,94 +280,182 @@ function irAFinalizarCompra(e) {
         return;
     }
 
+    if (divCarrito) divCarrito.style.display = 'none';
+    mostrarResumenDelPedido();
+}
+
+// Paso 1: resumen del pedido
+function mostrarResumenDelPedido() {
+    const total = calcularTotal();
+
+    const filas = carrito.map(producto => `
+        <tr>
+            <td style="padding: 10px 0; border-bottom: 1px solid #334155; text-align: left;">
+                <strong style="color: #F8FAFC;">${producto.nombre}</strong><br>
+                <small style="color: #94A3B8;">${producto.marca} &middot; ${producto.cantidad} u.</small>
+            </td>
+            <td style="padding: 10px 0; border-bottom: 1px solid #334155; text-align: right; color: #F8FAFC; white-space: nowrap;">
+                ${formatearPrecio(producto.precio * producto.cantidad)}
+            </td>
+        </tr>
+    `).join('');
+
     Swal.fire({
-        title: 'Completa tus datos',
+        title: 'Resumen de tu pedido',
         html: `
-            <div style="text-align: left;">
-                <label for="swal-nombre" style="display: block; margin-bottom: 8px; font-weight: 600; color: #0EA5E9;">Nombre:</label>
-                <input type="text" id="swal-nombre" class="swal2-input" placeholder="Tu nombre completo" style="width: 100%; margin-bottom: 15px;">
-                <label for="swal-email" style="display: block; margin-bottom: 8px; font-weight: 600; color: #0EA5E9;">Email:</label>
-                <input type="email" id="swal-email" class="swal2-input" placeholder="tu@email.com">
-            </div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                <tbody>
+                    ${filas}
+                    <tr>
+                        <td style="padding: 14px 0 0; text-align: left; font-size: 16px; color: #F8FAFC;">
+                            <strong>Total (${contarUnidades()} art.)</strong>
+                        </td>
+                        <td style="padding: 14px 0 0; text-align: right; font-size: 20px; color: #0EA5E9; white-space: nowrap;">
+                            <strong>${formatearPrecio(total)}</strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 18px; font-size: 12px; color: #94A3B8;">
+                Envío gratis a todo el país &middot; 3 cuotas sin interés
+            </p>
         `,
-        icon: 'question',
-        confirmButtonText: 'Continuar a Mercado Pago',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#0EA5E9',
-        cancelButtonColor: '#ef4444',
         showCancelButton: true,
-        preConfirm: () => {
-            const nombre = document.querySelector('#swal-nombre').value.trim();
-            const email = document.querySelector('#swal-email').value.trim();
-
-            if (!nombre) {
-                Swal.showValidationMessage('Por favor ingresa tu nombre');
-                return false;
-            }
-            if (!email || !email.includes('@')) {
-                Swal.showValidationMessage('Por favor ingresa un email válido');
-                return false;
-            }
-
-            return { nombre, email };
-        }
-    }).then(result => {
-        if (result.isConfirmed) {
-            procesarCompraConDatos(result.value.nombre, result.value.email);
-        }
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Seguir comprando',
+        confirmButtonColor: '#0EA5E9',
+        cancelButtonColor: '#475569'
+    }).then(resultado => {
+        if (resultado.isConfirmed) pedirDatosDelComprador();
     });
 }
 
-async function procesarCompraConDatos(nombre, email) {
+// Paso 2: datos del comprador y medio de pago.
+// A proposito NO se piden datos de tarjeta: es una demo y nadie deberia
+// escribir un numero de tarjeta real en una pagina de portafolio.
+function pedirDatosDelComprador() {
     Swal.fire({
-        title: 'Conectando con Mercado Pago...',
-        text: 'Estamos preparando tu orden de pago',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
+        title: 'Datos de envío',
+        html: `
+            <div style="text-align: left;">
+                <label for="swal-nombre" style="display: block; margin-bottom: 6px; font-weight: 600; color: #0EA5E9; font-size: 14px;">Nombre completo</label>
+                <input type="text" id="swal-nombre" class="swal2-input" placeholder="Ej: Santiago Saleme" style="width: 100%; margin: 0 0 14px;">
+
+                <label for="swal-email" style="display: block; margin-bottom: 6px; font-weight: 600; color: #0EA5E9; font-size: 14px;">Email</label>
+                <input type="email" id="swal-email" class="swal2-input" placeholder="tu@email.com" style="width: 100%; margin: 0 0 14px;">
+
+                <label for="swal-pago" style="display: block; margin-bottom: 6px; font-weight: 600; color: #0EA5E9; font-size: 14px;">Medio de pago</label>
+                <select id="swal-pago" class="swal2-select" style="width: 100%; margin: 0;">
+                    <option value="Tarjeta de crédito">Tarjeta de crédito - 3 cuotas sin interés</option>
+                    <option value="Tarjeta de débito">Tarjeta de débito</option>
+                    <option value="Transferencia bancaria">Transferencia bancaria - 10% off</option>
+                    <option value="Efectivo al recibir">Efectivo al recibir</option>
+                </select>
+
+                <p style="margin: 16px 0 0; font-size: 12px; color: #94A3B8; line-height: 1.5;">
+                    Compra simulada: no se piden datos de tarjeta y no se cobra nada.
+                </p>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar compra',
+        cancelButtonText: 'Volver',
+        confirmButtonColor: '#0EA5E9',
+        cancelButtonColor: '#475569',
+        focusConfirm: false,
+        preConfirm: () => {
+            const nombre = document.querySelector('#swal-nombre').value.trim();
+            const email = document.querySelector('#swal-email').value.trim();
+            const medioPago = document.querySelector('#swal-pago').value;
+
+            if (nombre.length < 3) {
+                Swal.showValidationMessage('Ingresá tu nombre completo');
+                return false;
+            }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+                Swal.showValidationMessage('Ingresá un email válido');
+                return false;
+            }
+
+            return { nombre, email, medioPago };
         }
+    }).then(resultado => {
+        if (resultado.isConfirmed) procesarCompraSimulada(resultado.value);
+    });
+}
+
+// Paso 3: "procesamiento" y confirmacion
+async function procesarCompraSimulada({ nombre, email, medioPago }) {
+    // Guardo los datos antes de vaciar el carrito.
+    const total = calcularTotal();
+    const unidades = contarUnidades();
+    const numeroOrden = generarNumeroOrden();
+
+    Swal.fire({
+        title: 'Procesando el pago...',
+        html: '<p style="color: #94A3B8; font-size: 14px;">Validando la orden y reservando el stock</p>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading()
     });
 
-    try {
-        const respuesta = await fetch(endpointPago, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                items: carrito,
-                payer: { nombre, email }
-            })
-        });
+    await esperar(1800);
 
-        const data = await respuesta.json();
-        Swal.close();
+    vaciarCarritoCompleto();
 
-        if (!respuesta.ok) {
-            throw new Error(data.error || 'No se pudo generar la orden de pago');
-        }
+    const entrega = new Date();
+    entrega.setDate(entrega.getDate() + 5);
+    const fechaEntrega = entrega.toLocaleDateString('es-AR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long'
+    });
 
-        if (mp && data.id) {
-            mp.checkout({
-                preference: { id: data.id },
-                autoOpen: true
-            });
-            vaciarCarritoCompleto();
-        } else if (data.init_point) {
-            // Sin SDK disponible: redirijo directo al checkout de Mercado Pago.
-            vaciarCarritoCompleto();
-            window.location.href = data.init_point;
-        } else {
-            throw new Error('No se pudo generar la orden de pago');
-        }
+    await Swal.fire({
+        icon: 'success',
+        title: '¡Compra confirmada!',
+        html: `
+            <p style="color: #F8FAFC; margin-bottom: 18px; font-size: 15px;">
+                Gracias por tu compra, <strong>${nombre.split(' ')[0]}</strong>.
+            </p>
+            <div style="text-align: left; background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 10px; padding: 16px; font-size: 14px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #94A3B8;">Orden</span>
+                    <strong style="color: #0EA5E9;">${numeroOrden}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #94A3B8;">Artículos</span>
+                    <strong style="color: #F8FAFC;">${unidades}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #94A3B8;">Medio de pago</span>
+                    <strong style="color: #F8FAFC;">${medioPago}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #94A3B8;">Entrega estimada</span>
+                    <strong style="color: #F8FAFC;">${fechaEntrega}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-top: 1px solid #334155; margin-top: 12px; padding-top: 12px;">
+                    <span style="color: #94A3B8;">Total</span>
+                    <strong style="color: #0EA5E9; font-size: 18px;">${formatearPrecio(total)}</strong>
+                </div>
+            </div>
+            <p style="margin: 18px 0 0; font-size: 12px; color: #94A3B8; line-height: 1.5;">
+                Enviaríamos el detalle a <strong style="color: #F8FAFC;">${email}</strong>.<br>
+                Esta es una tienda de demostración: la compra es ficticia y no se cobró nada.
+            </p>
+        `,
+        confirmButtonText: 'Listo',
+        confirmButtonColor: '#0EA5E9'
+    });
 
-    } catch (error) {
-        console.error("Error al procesar el pago:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Ocurrió un error',
-            text: 'No se pudo conectar con Mercado Pago. Verifica que el servidor (server.js) esté corriendo.',
-            confirmButtonColor: '#0EA5E9'
-        });
-    }
+    Toastify({
+        text: `Orden ${numeroOrden} registrada (demo)`,
+        duration: 4000,
+        gravity: 'top',
+        position: 'right',
+        backgroundColor: 'linear-gradient(135deg, #0EA5E9, #A855F7)',
+        stopOnFocus: true
+    }).showToast();
 }
