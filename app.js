@@ -2,10 +2,23 @@
 // 1. INICIALIZACIÓN Y VARIABLES GLOBALES
 // ==========================================
 
-// Inicializo Mercado Pago (Reemplazá 'TEST-TU_PUBLIC_KEY_DE_PRUEBA_AQUI' con tu clave real)
-const mp = new MercadoPago("APP_USR-951af724-669d-48f8-89d2-5425845ed35f", {
-    locale: 'es-AR'
-});
+// Public Key de Mercado Pago (es publica, puede ir en el front).
+const MP_PUBLIC_KEY = "APP_USR-951af724-669d-48f8-89d2-5425845ed35f";
+
+// El SDK se carga desde un CDN externo: si falla o lo bloquea un adblocker,
+// NO debe romper toda la pagina. Por eso la inicializacion va protegida.
+let mp = null;
+if (typeof MercadoPago !== 'undefined') {
+    mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'es-AR' });
+} else {
+    console.warn('No se pudo cargar el SDK de Mercado Pago. Se usara redireccion directa al checkout.');
+}
+
+// En local el backend corre en el puerto 3000; en Vercel es una funcion en /api.
+const enLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+const endpointPago = enLocal
+    ? 'http://localhost:3000/api/create-preference'
+    : '/api/create-preference';
 
 const apiURL = './data.json';
 let botines = [];
@@ -307,7 +320,7 @@ async function procesarCompraConDatos(nombre, email) {
     });
 
     try {
-        const respuesta = await fetch('http://localhost:3000/create-preference', {
+        const respuesta = await fetch(endpointPago, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -321,15 +334,20 @@ async function procesarCompraConDatos(nombre, email) {
         const data = await respuesta.json();
         Swal.close();
 
-        if (data.id) {
+        if (!respuesta.ok) {
+            throw new Error(data.error || 'No se pudo generar la orden de pago');
+        }
+
+        if (mp && data.id) {
             mp.checkout({
-                preference: {
-                    id: data.id
-                },
+                preference: { id: data.id },
                 autoOpen: true
             });
-
             vaciarCarritoCompleto();
+        } else if (data.init_point) {
+            // Sin SDK disponible: redirijo directo al checkout de Mercado Pago.
+            vaciarCarritoCompleto();
+            window.location.href = data.init_point;
         } else {
             throw new Error('No se pudo generar la orden de pago');
         }

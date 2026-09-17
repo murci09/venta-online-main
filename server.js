@@ -1,52 +1,22 @@
+// Servidor SOLO para desarrollo local.
+// En Vercel no se usa: alli corre api/create-preference.js como funcion serverless.
+// Uso:  set MP_ACCESS_TOKEN=tu_token   (PowerShell: $env:MP_ACCESS_TOKEN="tu_token")
+//       node server.js
+
 const express = require('express');
 const cors = require('cors');
-const { MercadoPagoConfig, Preference } = require('mercadopago');
+const crearPreferencia = require('./api/create-preference.js');
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-// Reemplazá con tu Access Token de prueba
-const client = new MercadoPagoConfig({ 
-    accessToken: 'TOKEN_REVOCADO_Y_REMOVIDO' 
-});
-
-app.post('/create-preference', async (req, res) => {
-    try {
-        const { items, payer } = req.body;
-
-        const preference = new Preference(client);
-
-        const result = await preference.create({
-            body: {
-                items: items.map(item => ({
-                    title: item.nombre,
-                    unit_price: Number(item.precio),
-                    quantity: Number(item.cantidad),
-                    currency_id: 'ARS'
-                })),
-                payer: {
-                    name: payer.nombre,
-                    email: payer.email
-                },
-                back_urls: {
-                    success: 'http://localhost:5500/index.html',
-                    failure: 'http://localhost:5500/index.html',
-                    pending: 'http://localhost:5500/index.html'
-                },
-              
-            }
-        });
-
-        res.json({ id: result.id });
-
-    } catch (error) {
-        console.error("Error al crear preferencia:", error);
-        res.status(500).json({ error: error.message });
-    }
-});
+app.post('/api/create-preference', crearPreferencia);
 
 app.listen(3000, () => {
     console.log('Servidor de Mercado Pago corriendo en http://localhost:3000');
+    if (!process.env.MP_ACCESS_TOKEN) {
+        console.warn('AVISO: falta la variable MP_ACCESS_TOKEN, los pagos van a fallar.');
+    }
 });

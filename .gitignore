@@ -1,0 +1,8 @@
+node_modules/
+.vercel
+.env
+.env*.local
+
+# Un solo lockfile: se usa package-lock.json (npm).
+# Si pnpm-lock.yaml se sube, Vercel instala con pnpm y puede romper el build.
+pnpm-lock.yaml
